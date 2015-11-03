@@ -29,28 +29,27 @@
         };
     });
 
-    angular.module('minicolors').directive('minicolors', [
-        'minicolors', '$timeout', '$parse', function(minicolors, $timeout, $parse)
-        {
+    angular.module('minicolors').directive('minicolors', ['minicolors', '$timeout', '$parse', function (minicolors, $timeout, $parse)
+    {
             return {
                 require: '?ngModel',
                 restrict: 'A',
-                priority: 1, //since we bind on an input element, we have to set a higher priority than angular-default input
+                priority: 1, // since we bind on an input element, we have to set a higher priority than angular-default input
                 link: function(scope, element, attrs, ngModel)
                 {
                     var inititalized = false;
 
-                    //gets the settings object
+                    // gets the settings object
                     var getSettings = function()
                     {
                         var config = angular.extend({}, minicolors.defaults, scope.$eval(attrs.minicolors));
                         return config;
                     };
 
-                    //what to do if the value changed
+                    // what to do if the value changed
                     ngModel.$render = function()
                     {
-//we are in digest or apply, and therefore call a timeout function
+                        // we are in digest or apply, and therefore call a timeout function
                         $timeout(function()
                         {
                             var color = ngModel.$viewValue;
@@ -61,7 +60,7 @@
                         }, 0, false);
                     };
 
-                    //init method
+                    // init method
                     var initMinicolors = function()
                     {
                         if (!ngModel)
@@ -69,19 +68,22 @@
                             return;
                         }
                         var settings = getSettings();
-                        settings.change = function(hex, opacity)
+                        settings.change = function(value, opacity)
                         {
                             scope.$apply(function()
                             {
-                                ngModel.$setViewValue(hex);
-                                if (attrs.minicolorsRgba)
+                                if (settings.format === "rgb" && settings.opacity === true)
                                 {
                                     var rgba = element.minicolors('rgbaString');
-                                    $parse(attrs.minicolorsRgba).assign(scope, rgba);
-                                }
-                                if (attrs.minicolorsOpacity)
+                                    ngModel.$setViewValue(rgba);
+                                } else if (settings.format === "rgb" && settings.opacity === false)
                                 {
-                                    $parse(attrs.minicolorsOpacity).assign(scope, opacity);
+                                    var rgb = element.minicolors('rgbString');
+                                    ngModel.$setViewValue(rgb);
+                                } else
+                                {
+                                    var hex = value;
+                                    ngModel.$setViewValue(hex);
                                 }
                             });
                         };
@@ -111,7 +113,7 @@
                     };
 
                     initMinicolors();
-                    //initital call
+                    // initital call
 
                     // Watch for changes to the directives options and then call init method again
                     scope.$watch(getSettings, initMinicolors, true);
