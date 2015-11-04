@@ -49,13 +49,27 @@
                     // what to do if the value changed
                     ngModel.$render = function()
                     {
-                        // we are in digest or apply, and therefore call a timeout function
-                        $timeout(function()
-                        {
-                            var color = ngModel.$viewValue;
-                            element.minicolors('value', color);
-                        }, 0, false);
+                        var color = ngModel.$viewValue;
+                        element.minicolors('value', color);
                     };
+
+                    var updateModel = function()
+                    {
+                        var settings = getSettings();
+                        if (settings.format === "rgb" && settings.opacity === true)
+                        {
+                            var rgba = element.minicolors('rgbaString');
+                            ngModel.$setViewValue(rgba);
+                        } else if (settings.format === "rgb" && settings.opacity === false)
+                        {
+                            var rgb = element.minicolors('rgbString');
+                            ngModel.$setViewValue(rgb);
+                        } else
+                        {
+                            var hex = value;
+                            ngModel.$setViewValue(hex);
+                        }
+                    }
 
                     // init method
                     var initMinicolors = function()
@@ -64,25 +78,11 @@
                         {
                             return;
                         }
+                        
                         var settings = getSettings();
-                        settings.change = function(value, opacity)
+                        settings.change = function (value, opacity)
                         {
-                            scope.$apply(function()
-                            {
-                                if (settings.format === "rgb" && settings.opacity === true)
-                                {
-                                    var rgba = element.minicolors('rgbaString');
-                                    ngModel.$setViewValue(rgba);
-                                } else if (settings.format === "rgb" && settings.opacity === false)
-                                {
-                                    var rgb = element.minicolors('rgbString');
-                                    ngModel.$setViewValue(rgb);
-                                } else
-                                {
-                                    var hex = value;
-                                    ngModel.$setViewValue(hex);
-                                }
-                            });
+                            scope.$evalAsync(updateModel);
                         };
 
                         //destroy the old colorpicker if one already exists
@@ -99,13 +99,9 @@
                         //$scope.$apply will be called by $timeout, so we don't have to handle that case
                         if (!inititalized)
                         {
-                            $timeout(function()
-                            {
-                                var color = ngModel.$viewValue;
-                                element.minicolors('value', color);
-                            }, 0);
+                            var color = ngModel.$viewValue;
+                            element.minicolors('value', color);
                             inititalized = true;
-                            return;
                         }
                     };
 
