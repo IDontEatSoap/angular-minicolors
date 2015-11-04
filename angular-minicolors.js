@@ -56,18 +56,26 @@
                     var updateModel = function()
                     {
                         var settings = getSettings();
+
                         if (settings.format === "rgb" && settings.opacity === true)
                         {
-                            var rgba = element.minicolors('rgbaString');
+                            var rgba = element.minicolors("rgbaString");
                             ngModel.$setViewValue(rgba);
-                        } else if (settings.format === "rgb" && settings.opacity === false)
+                            return;
+                        }
+
+                        if (settings.format === "rgb" && settings.opacity === false)
                         {
-                            var rgb = element.minicolors('rgbString');
+                            var rgb = element.minicolors("rgbString");
                             ngModel.$setViewValue(rgb);
-                        } else
+                            return;
+                        }
+
+                        if(settings.format === "hex")
                         {
                             var hex = value;
                             ngModel.$setViewValue(hex);
+                            return;
                         }
                     }
 
@@ -97,12 +105,12 @@
                         // are we inititalized yet ?
                         //needs to be wrapped in $timeout, to prevent $apply / $digest errors
                         //$scope.$apply will be called by $timeout, so we don't have to handle that case
-                        if (!inititalized)
+                        /*if (!inititalized)
                         {
                             var color = ngModel.$viewValue;
                             element.minicolors('value', color);
                             inititalized = true;
-                        }
+                        }*/
                     };
 
                     initMinicolors();
