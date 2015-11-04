@@ -54,9 +54,6 @@
                         {
                             var color = ngModel.$viewValue;
                             element.minicolors('value', color);
-                            var opacity = scope.$eval(attrs.minicolorsOpacity) || '1.0';
-                            element.minicolors('value', color);
-                            element.minicolors('opacity', opacity);
                         }, 0, false);
                     };
 
