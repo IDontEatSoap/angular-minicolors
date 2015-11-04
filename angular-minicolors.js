@@ -49,8 +49,7 @@
                     // what to do if the value changed
                     ngModel.$render = function()
                     {
-                        var color = ngModel.$viewValue;
-                        element.minicolors('value', color);
+                        element.minicolors('value', ngModel.$viewValue);
                     };
 
                     var updateModel = function()
